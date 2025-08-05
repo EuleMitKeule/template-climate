@@ -1,0 +1,33 @@
+
+
+climate:
+  - platform: template_climate
+    climates:
+      buro:
+        unique_id: buro
+        name: Büro
+        icon: "mdi:radiator"
+        state: "off"
+        temperature_unit: "°C"
+        variables:
+          target_temp: 22
+          current_temp: 20
+        attributes:
+          target_temperature: >
+            {{ target_temp }}
+          current_temperature: >
+            {{ current_temp }}
+        service_scripts:
+          turn_on:
+            service: light.turn_on
+            data_template:
+              entity_id: light.buro
+          turn_off:
+            service: light.turn_off
+            data_template:
+              entity_id: light.buro
+        hvac_mode_scripts:
+          heat:
+            - service: light.turn_on
+              data_template:
+                entity_id: light.buro

@@ -1,0 +1,1 @@
+"""Template Climate integration."""
