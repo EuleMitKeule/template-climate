@@ -50,14 +50,14 @@ _LOGGER = logging.getLogger(__name__)
 
 CLIMATE_SCHEMA = vol.Schema(
     {
-        vol.Optional(CONF_NAME): cv.string,
+        vol.Optional(CONF_NAME): cv.template,
         vol.Optional(CONF_UNIQUE_ID): cv.string,
-        vol.Optional(CONF_ICON): cv.string,
-        vol.Optional(CONF_PICTURE): cv.string,
+        vol.Optional(CONF_ICON): cv.template,
+        vol.Optional(CONF_PICTURE): cv.template,
         vol.Optional(CONF_VARIABLES): cv.SCRIPT_VARIABLES_SCHEMA,
         vol.Optional(CONF_ATTRIBUTES): vol.Schema({cv.string: cv.template}),
         vol.Required(CONF_TEMPERATURE_UNIT): cv.string,
-        vol.Optional(CONF_STATE): cv.string,
+        vol.Optional(CONF_STATE): cv.template,
         vol.Optional(CONF_BASE_CLIMATE_ENTITY_ID): cv.entity_id,
         vol.Optional(CONF_SERVICE_SCRIPTS, default={}): {cv.string: cv.SCRIPT_SCHEMA},
         vol.Optional(CONF_HVAC_MODE_SCRIPTS, default={}): {cv.string: cv.SCRIPT_SCHEMA},
@@ -113,7 +113,7 @@ class TemplateClimate(TemplateEntity, ClimateEntity):
         self._attr_temperature_unit = config[CONF_TEMPERATURE_UNIT]
 
         self._base_climate_entity_id = config.get(CONF_BASE_CLIMATE_ENTITY_ID)
-        self._state_template: Template | None = Template(config.get(CONF_STATE), hass)
+        self._state_template: Template | None = config.get(CONF_STATE)
         self._state: str | None = None
         self._service_scripts = {
             service: Script(hass, service_script, name, CLIMATE_DOMAIN)
