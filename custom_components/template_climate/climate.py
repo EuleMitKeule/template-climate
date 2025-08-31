@@ -13,11 +13,11 @@ from homeassistant.components.climate import (
     ClimateEntityFeature,
     HVACMode,
 )
-from homeassistant.components.template.template_entity import (
+from homeassistant.components.template.schemas import (
     TEMPLATE_ENTITY_ATTRIBUTES_SCHEMA,
-    TEMPLATE_ENTITY_COMMON_SCHEMA,
-    TemplateEntity,
+    TEMPLATE_ENTITY_COMMON_CONFIG_ENTRY_SCHEMA,
 )
+from homeassistant.components.template.template_entity import TemplateEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import TemplateError
 import homeassistant.helpers.config_validation as cv
@@ -73,7 +73,7 @@ CLIMATE_SCHEMA = (
             },
         }
     )
-    .extend(TEMPLATE_ENTITY_COMMON_SCHEMA.schema)
+    .extend(TEMPLATE_ENTITY_COMMON_CONFIG_ENTRY_SCHEMA.schema)
     .extend(TEMPLATE_ENTITY_ATTRIBUTES_SCHEMA.schema)
 )
 
