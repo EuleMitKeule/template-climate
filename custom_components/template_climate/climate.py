@@ -13,10 +13,6 @@ from homeassistant.components.climate import (
     ClimateEntityFeature,
     HVACMode,
 )
-from homeassistant.components.template.schemas import (
-    TEMPLATE_ENTITY_ATTRIBUTES_SCHEMA,
-    TEMPLATE_ENTITY_COMMON_CONFIG_ENTRY_SCHEMA,
-)
 from homeassistant.components.template.template_entity import TemplateEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import TemplateError
@@ -24,14 +20,17 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.script import Script, Template
-from homeassistant.helpers.trigger_template_entity import CONF_UNIQUE_ID
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
 from .const import (
+    CONF_ATTRIBUTES,
     CONF_BASE_CLIMATE_ENTITY_ID,
     CONF_CLIMATES,
     CONF_FAN_MODE_SCRIPTS,
     CONF_HVAC_MODE_SCRIPTS,
+    CONF_ICON,
+    CONF_NAME,
+    CONF_PICTURE,
     CONF_PRESET_MODE_SCRIPTS,
     CONF_SERVICE_SCRIPTS,
     CONF_SET_HUMIDITY_SCRIPT,
@@ -43,38 +42,36 @@ from .const import (
     CONF_TOGGLE_SCRIPT,
     CONF_TURN_OFF_SCRIPT,
     CONF_TURN_ON_SCRIPT,
+    CONF_UNIQUE_ID,
+    CONF_VARIABLES,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
-CLIMATE_SCHEMA = (
-    vol.Schema(
-        {
-            vol.Required(CONF_TEMPERATURE_UNIT): cv.string,
-            vol.Optional(CONF_STATE): cv.string,
-            vol.Optional(CONF_BASE_CLIMATE_ENTITY_ID): cv.entity_id,
-            vol.Optional(CONF_SERVICE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-            vol.Optional(CONF_HVAC_MODE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-            vol.Optional(CONF_PRESET_MODE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-            vol.Optional(CONF_FAN_MODE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-            vol.Optional(CONF_SWING_MODE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-            vol.Optional(CONF_SWING_HORIZONTAL_MODE_SCRIPTS, default={}): {
-                cv.string: cv.SCRIPT_SCHEMA
-            },
-        }
-    )
-    .extend(TEMPLATE_ENTITY_COMMON_CONFIG_ENTRY_SCHEMA.schema)
-    .extend(TEMPLATE_ENTITY_ATTRIBUTES_SCHEMA.schema)
+CLIMATE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_NAME): cv.string,
+        vol.Optional(CONF_UNIQUE_ID): cv.string,
+        vol.Optional(CONF_ICON): cv.string,
+        vol.Optional(CONF_PICTURE): cv.string,
+        vol.Optional(CONF_VARIABLES): cv.SCRIPT_VARIABLES_SCHEMA,
+        vol.Optional(CONF_ATTRIBUTES): vol.Schema({cv.string: cv.template}),
+        vol.Required(CONF_TEMPERATURE_UNIT): cv.string,
+        vol.Optional(CONF_STATE): cv.string,
+        vol.Optional(CONF_BASE_CLIMATE_ENTITY_ID): cv.entity_id,
+        vol.Optional(CONF_SERVICE_SCRIPTS, default={}): {cv.string: cv.SCRIPT_SCHEMA},
+        vol.Optional(CONF_HVAC_MODE_SCRIPTS, default={}): {cv.string: cv.SCRIPT_SCHEMA},
+        vol.Optional(CONF_PRESET_MODE_SCRIPTS, default={}): {
+            cv.string: cv.SCRIPT_SCHEMA
+        },
+        vol.Optional(CONF_FAN_MODE_SCRIPTS, default={}): {cv.string: cv.SCRIPT_SCHEMA},
+        vol.Optional(CONF_SWING_MODE_SCRIPTS, default={}): {
+            cv.string: cv.SCRIPT_SCHEMA
+        },
+        vol.Optional(CONF_SWING_HORIZONTAL_MODE_SCRIPTS, default={}): {
+            cv.string: cv.SCRIPT_SCHEMA
+        },
+    }
 )
 
 PLATFORM_SCHEMA = CLIMATE_PLATFORM_SCHEMA.extend(
